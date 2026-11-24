@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="MainScene" extends="Scene">
+  <script type="text/brightscript" uri="pkg:/components/MainScene.brs" />
+  <children>
+    <Rectangle id="bg" width="1920" height="1080" color="0x1E1F22FF" />
+    <Label id="headerLabel" text="Rokord - 3xolf App Hub" translation="[80, 50]" width="1760" height="60" />
+    <Label id="statusLabel" text="Status: Sign in inside channel." translation="[80, 120]" width="1760" height="50" />
+    <LabelList id="channelList" translation="[80, 200]" width="520" height="760" />
+    <Label id="messagesLabel" text="Select Refresh Guilds to test API." translation="[640, 200]" width="1200" height="760" wrap="true" />
+  </children>
+</component>
