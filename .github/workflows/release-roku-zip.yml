@@ -1,0 +1,45 @@
+name: Build and Release Roku Zip
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package-roku:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify Roku channel structure
+        run: |
+          test -f manifest
+          test -f source/main.brs
+          test -f components/MainScene.xml
+          test -f components/MainScene.brs
+
+      - name: Build BrightScript sideload zip
+        run: |
+          ZIP_NAME="rokord-roku.zip"
+          rm -f "$ZIP_NAME"
+          zip -r "$ZIP_NAME" manifest source components $( [ -f README.md ] && echo README.md )
+          unzip -l "$ZIP_NAME"
+
+      - name: Upload zip artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rokord-roku-zip
+          path: rokord-roku.zip
+
+      - name: Publish GitHub Release on version tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v3
+        with:
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: rokord-roku.zip
