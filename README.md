@@ -1,3 +1,3 @@
 # rokord-roku
 
-Rokord by 3xolf.
+Rokord Roku client by 3xolf.
