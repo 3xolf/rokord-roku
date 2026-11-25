@@ -9,14 +9,7 @@ sub Init()
 
     m.rokuIp = GetLocalIpAddress()
     m.sameNetworkReady = (m.rokuIp <> "")
-
-    if not m.sameNetworkReady
-        m.statusLabel.text = "Status: Connect Roku to Wi-Fi/LAN on the SAME connection as your mobile app."
-    else if m.token = ""
-        m.statusLabel.text = "Status: Mobile login required on same connection (" + m.rokuIp + ")."
-    else
-        m.statusLabel.text = "Status: Paired session found on " + m.rokuIp + ". Verify same connection when pairing."
-    end if
+    UpdateStatusText()
 
     content = CreateObject("roSGNode", "ContentNode")
     for each label in ["Check Same Connection", "Refresh Guilds", "Clear Saved Token"]
@@ -26,6 +19,38 @@ sub Init()
     end for
     m.channelList.content = content
     m.channelList.SetFocus(true)
+end sub
+
+sub UpdateStatusText()
+    m.rokuIp = GetLocalIpAddress()
+    m.sameNetworkReady = (m.rokuIp <> "")
+    if not m.sameNetworkReady
+        m.statusLabel.text = "Status: Connect Roku to Wi-Fi/LAN on the SAME connection as your mobile app."
+    else if m.token = ""
+        m.statusLabel.text = "Status: Mobile login required on same connection (" + m.rokuIp + ")."
+    else
+        m.statusLabel.text = "Status: Token saved on Roku (" + m.rokuIp + "). Same connection required when pairing."
+    end if
+end sub
+
+sub OnLaunchArgsChanged()
+    args = m.top.launchArgs
+    m.rokuIp = GetLocalIpAddress()
+    if m.rokuIp = ""
+        m.statusLabel.text = "Blocked: Roku has no active local network connection."
+        return
+    end if
+    if type(args) = "roAssociativeArray" and args.DoesExist("token")
+        incomingToken = args["token"].ToStr()
+        if incomingToken <> ""
+            m.token = incomingToken
+            m.sec.Write("discord_token", m.token)
+            m.sec.Flush()
+            m.statusLabel.text = "Paired: Token received on same connection (" + m.rokuIp + "). Ready to Refresh Guilds."
+            return
+        end if
+    end if
+    UpdateStatusText()
 end sub
 
 function GetLocalIpAddress() as String

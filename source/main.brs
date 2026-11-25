@@ -1,8 +1,11 @@
-sub Main()
+sub Main(args as Dynamic)
     screen = CreateObject("roSGScreen")
     port = CreateObject("roMessagePort")
     screen.SetMessagePort(port)
     scene = screen.CreateScene("MainScene")
+    if type(args) = "roAssociativeArray"
+        scene.SetField("launchArgs", args)
+    end if
     screen.Show()
 
     while true
